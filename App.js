@@ -1,42 +1,39 @@
-import * as Font from "expo-font";
-import * as SplashScreen from 'expo-splash-screen';
-import { Text, View } from "react-native";
-import { useEffect, useCallback } from "react";
+import SignIn from "./screens/SignIn";
+import useCachedResources from "./hooks/useCachedResources";
+import { store } from "./state_manage/reducers/store";
+import { Provider } from "react-redux";
+import { useEffect, useState } from "react";
+import * as Linking from "expo-linking";
 
 export default function App() {
-  const [fontsLoaded] = Font.useFonts({
-    "Inter-Black": require("./assets/fonts/Inter-Black.otf"),
-    "Inter-SemiBoldItalic":
-      "https://rsms.me/inter/font-files/Inter-SemiBoldItalic.otf?v=3.12",
-  });
+  function handleDeepLink(event) {
+    let data = Linking.parse(event.url);
+    setPostID(data);
+  }
+  const [postID, setPostID] = useState(null);
 
   useEffect(() => {
-    async function prepare() {
-      await SplashScreen.preventAutoHideAsync();
+    async function getInitialURL() {
+      const initialURL = await Linking.getInitialURL();
+      if (initialURL) setPostID(Linking.parse(initialURL));
     }
-
-    prepare();
-  }, []);
-
-  const onLayoutRootView = useCallback(async () => {
-    if (fontsLoaded) {
-      await SplashScreen.hideAsync();
+    const event = Linking.addEventListener("url", handleDeepLink);
+    if (!postID) {
+      getInitialURL();
     }
-  }, [fontsLoaded]);
+    return () => {
+      event.remove();
+    };
+  });
+  const isLoadingComplete = useCachedResources();
 
-  if (!fontsLoaded) {
+  if (!isLoadingComplete) {
     return null;
+  } else {
+    return (
+      <Provider store={store}>
+        <SignIn />
+      </Provider>
+    );
   }
-
-  return (
-    <View 
-      style={{ flex: 1, justifyContent: "center", alignItems: "center" }}
-      onLayout={onLayoutRootView}>
-      <Text>Platform Default</Text>
-      <Text style={{ fontFamily: "Inter-Black" }}>Inter Black</Text>
-      <Text style={{ fontFamily: "Inter-SemiBoldItalic" }}>
-        Inter SemiBoldItalic
-      </Text>
-    </View>
-  );
 }
