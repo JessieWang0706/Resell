@@ -19,6 +19,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import PurpleButton from "../components/PurpleButton";
 import Layout from "../constants/Layout";
 import { fonts } from "../globalStyle/globalFont";
+import { makeToast } from "../utils/Toast";
 
 export function NewRequestScreen({ navigation, route }) {
   const [title, setTitle] = useState("");
@@ -55,12 +56,12 @@ export function NewRequestScreen({ navigation, route }) {
       body: Json,
     })
       .then(function (response) {
-        alert("Success!!");
-
         if (!response.ok) {
           let error = new Error(response.statusText);
           throw error;
         } else {
+          makeToast("New request posted");
+
           return response.json();
         }
       })

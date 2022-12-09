@@ -488,18 +488,34 @@ export default function ProductDetailsScreen({ route, navigation }) {
         sellerEmail != auth?.currentUser?.email && (
           <View style={styles.greyButton}>
             <PurpleButton
-              onPress={() => {
-                historyRef
+              onPress={async () => {
+                var confirmedTime = "";
+                var confirmedViewed = false;
+
+                const myHistoryRef = await historyRef
                   .doc(auth?.currentUser?.email)
                   .collection("sellers")
-                  .doc(sellerEmail)
-                  .update({ viewed: true });
+                  .doc(sellerEmail);
+                const doc = await myHistoryRef.get();
+                if (doc.exists) {
+                  console.log(doc.data());
+                  historyRef
+                    .doc(auth?.currentUser?.email)
+                    .collection("sellers")
+                    .doc(sellerEmail)
+                    .update({ viewed: true });
+                  confirmedTime = doc.data().confirmedTime;
+                  confirmedViewed = doc.data().confirmedViewed;
+                }
+
                 navigation.navigate("ChatWindow", {
                   name: sellerName,
                   receiverImage: profileImage,
                   email: sellerEmail,
                   post: post,
                   isBuyer: true,
+                  confirmedTime: confirmedTime,
+                  confirmedViewed: confirmedViewed,
                   screen: "product",
                 });
               }}

@@ -4,6 +4,7 @@ import { store } from "./state_manage/reducers/store";
 import { Provider } from "react-redux";
 import { useEffect, useState } from "react";
 import * as Linking from "expo-linking";
+import { RootSiblingParent } from "react-native-root-siblings";
 
 export default function App() {
   function handleDeepLink(event) {
@@ -31,9 +32,11 @@ export default function App() {
     return null;
   } else {
     return (
-      <Provider store={store}>
-        <SignIn />
-      </Provider>
+      <RootSiblingParent>
+        <Provider store={store}>
+          <SignIn />
+        </Provider>
+      </RootSiblingParent>
     );
   }
 }

@@ -21,6 +21,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import PurpleButton from "../components/PurpleButton";
 import Layout from "../constants/Layout";
 import { fonts } from "../globalStyle/globalFont";
+import { makeToast } from "../utils/Toast";
 
 export function NewPostDetail({ navigation, route }) {
   const { image } = route.params;
@@ -38,13 +39,14 @@ export function NewPostDetail({ navigation, route }) {
       }
     }
   });
+  console.log(userId);
   const postRequest = () => {
     const Json = JSON.stringify({
       title: title,
       description: description,
       categories: [FILTER1[count].title],
       price: Number(price.substring(1)),
-      created: Math.round(new Date().getTime() / 1000),
+      // created: Math.round(new Date().getTime() / 1000),
       imagesBase64: image,
       userId: userId,
     });
@@ -58,12 +60,12 @@ export function NewPostDetail({ navigation, route }) {
       body: Json,
     })
       .then(function (response) {
-        alert("Success!!");
-
         if (!response.ok) {
-          let error = new Error(response.statusText);
-          throw error;
+          // let error = new Error(response.statusText);
+          console.log("why", response.body);
         } else {
+          makeToast("New listing posted");
+
           return response.json();
         }
       })

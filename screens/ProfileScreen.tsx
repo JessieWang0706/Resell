@@ -28,7 +28,7 @@ import { OwnPostRoute } from "./OwnPostRoute";
 import { ArchivedPost } from "./ArchivedRoute";
 import { RequestRoute } from "./RequestRoute";
 import { fonts } from "../globalStyle/globalFont";
-import { getUserId } from "../networking/asychStorageFunctions";
+import { getUserId } from "../utils/asychStorageFunctions";
 export default function ProfileScreen({ navigation }) {
   const isFocused = useIsFocused();
   const [expand, setExpand] = useState(false);

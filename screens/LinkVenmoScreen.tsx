@@ -14,17 +14,12 @@ import { useEffect, useState } from "react";
 import { auth, userRef } from "../config/firebase";
 import { userInfo } from "os";
 import { fonts } from "../globalStyle/globalFont";
-import {
-  getAccessToken,
-  storeOnboarded,
-} from "../networking/asychStorageFunctions";
+import { getAccessToken, storeOnboarded } from "../utils/asychStorageFunctions";
 import { useSelector } from "react-redux";
-import { gEmail } from "../state_manage/reducers/signInReducer";
 
 export default function LinkVenmoScreen({ navigation, route }) {
   const { image, username, bio } = route.params;
   const [venmo, setVenmo] = useState("");
-  const email = useSelector(gEmail);
 
   const [accessToken, setAccessToken] = useState("");
   useEffect(() => {

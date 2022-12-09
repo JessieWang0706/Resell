@@ -27,14 +27,14 @@ import {
   storeRefreshToken,
   storeSignedIn,
   storeUserId,
-} from "../networking/asychStorageFunctions";
+} from "../utils/asychStorageFunctions";
+import { ResponseType } from "expo-auth-session";
 export default function SignIn() {
-  const [request, result, promptAsync] = Google.useAuthRequest({
-    responseType: "id_token",
+  const [request, result, promptAsync] = Google.useIdTokenAuthRequest({
     expoClientId:
       "947198045768-i9tuc7gvs6hipq2uid5pove59pdlh9jm.apps.googleusercontent.com",
-    iosClientId: `947198045768-2kkjna68er930llq0qlikh6dceeoijkm.apps.googleusercontent.com`,
-    androidClientId: `947198045768-rv46c5qro1ghplqmjsf7p6e3l3afhj0o.apps.googleusercontent.com`,
+    iosClientId: `947198045768-vju27cp537legpef5ok51obpjshq11bj.apps.googleusercontent.com`,
+    androidClientId: `947198045768-miln50ernorl8s7kqibnpp59hoklor3n.apps.googleusercontent.com`,
     // iosStandaloneAppClientId:
     //   "947198045768-vju27cp537legpef5ok51obpjshq11bj.apps.googleusercontent.com",
     // androidStandaloneAppClientId:
@@ -69,6 +69,7 @@ export default function SignIn() {
     getEmail(setEmail);
     console.log("email", email);
     console.log("signedIn", isSignedIn);
+    console.log(userId);
 
     if (email !== "" && isSignedIn) {
       getUserId(setUserId);

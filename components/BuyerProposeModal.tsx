@@ -12,70 +12,97 @@ import PurpleButton from "./PurpleButton";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Calendar from "expo-calendar";
 import { auth, historyRef } from "../config/firebase";
+import moment from "moment";
+import { fonts } from "../globalStyle/globalFont";
+import { makeToast } from "../utils/Toast";
 export default function BuyerProposeModal({
-  syncMeetingVisible,
-  setSyncMeetingVisible,
-  eventTitle,
-  text,
-  isBuyer,
+  visible,
+  setVisible,
+  setAvailabilityVisible,
+  startDate,
   sellerEmail,
-  dateText,
+  post,
+  setStartDate,
 }) {
+  const momentDate = moment(startDate, "MMMM Do YYYY, h:mm a");
+  const startText = moment(momentDate).format("dddd, MMMM Do · h:mm");
+  const endDate = moment(momentDate).add(30, "m").format("h:mm a");
+  const dateText = startText + "-" + endDate;
+  console.log(visible);
   return (
     <Modal //Confirm Meeting details
-      isVisible={syncMeetingVisible}
+      isVisible={visible}
       backdropOpacity={0.2}
       onBackdropPress={() => {
-        setSyncMeetingVisible(false);
+        setVisible(false);
+        setStartDate(null);
+        setAvailabilityVisible(true);
       }}
       style={{ justifyContent: "flex-end", margin: 0 }}
     >
       <View style={styles.slideUp}>
-        <Text style={styles.MeetingDetailsBoldText}>Meeting Details</Text>
-        <View style={styles.MeetingDetails}>
-          <Text style={styles.SubMeetingDetails}>{text}</Text>
+        <Text style={[fonts.pageHeading3, { marginTop: "14%" }]}>
+          Meeting Details
+        </Text>
+        <View style={{ marginTop: 24 }}>
+          <Text style={fonts.body1}>
+            You are proposing the following meeting:
+          </Text>
 
-          <Text style={styles.MeetingDetailsBoldText}>Time</Text>
-          <Text style={styles.SubMeetingDetails}>{dateText}</Text>
+          <Text
+            style={[fonts.pageHeading3, { marginTop: 24, marginBottom: 4 }]}
+          >
+            Time
+          </Text>
+          <Text style={fonts.body1}>{dateText}</Text>
         </View>
-        <View style={styles.purpleButton}>
+        <View style={{ position: "absolute", bottom: "22%" }}>
           <PurpleButton
-            text={"Propose Meeing"}
-            onPress={() => {
-              (async () => {
-                const { status } =
-                  await Calendar.requestCalendarPermissionsAsync();
-                if (status === "granted") {
-                  setSyncMeetingVisible(false);
-                  //   historyRef
-                  //     .doc(sellerEmail)
-                  //     .collection("buyers")
-                  //     .doc( auth?.currentUser?.email )
-                  //     .set({
-                  //       item: post,
-                  //       recentMessage: recentMessage,
-                  //       recentSender: auth?.currentUser?.email,
-                  //       name: isBuyer ? auth?.currentUser?.displayName : name,
-                  //       image: isBuyer
-                  //         ? auth?.currentUser?.photoURL
-                  //         : receiverImage,
-                  //       viewed: !isBuyer,
-                  //       isConfirmed:
-                  //         isConfirmed == undefined ? false : isConfirmed,
-                  //       isProposed: isProposed == undefined ? false : isProposed,
-                  //     });
-                } else {
-                  Alert.alert("permission not granted");
-                }
-              })();
+            text={"Propose Meeting"}
+            onPress={async () => {
+              const myHistoryRef = await historyRef
+                .doc(sellerEmail)
+                .collection("buyers")
+                .doc(auth?.currentUser?.email);
+              const doc = await myHistoryRef.get();
+
+              if (doc.exists) {
+                myHistoryRef.update({
+                  recentMessage: "Proposed a Time",
+                  recentSender: auth?.currentUser?.email,
+                  proposedTime: startDate,
+                  proposedViewed: false,
+                  viewed: false,
+                });
+              } else {
+                historyRef
+                  .doc(sellerEmail)
+                  .collection("buyers")
+                  .doc(auth?.currentUser?.email)
+                  .set({
+                    item: post,
+                    recentMessage: "Proposed a Time",
+                    recentSender: auth?.currentUser?.email,
+                    name: auth?.currentUser?.displayName,
+                    image: auth?.currentUser?.photoURL,
+                    viewed: false,
+                    proposedTime: startDate,
+                    proposedViewed: false,
+                  });
+              }
+              setStartDate("");
+              setVisible(false);
+              makeToast("Time proposed");
             }}
             enabled={true}
           />
         </View>
         <Text
-          style={styles.MeetingDetailsBoldText}
+          style={[fonts.Title2, { position: "absolute", bottom: "11%" }]}
           onPress={() => {
-            setSyncMeetingVisible(false);
+            setVisible(false);
+            setStartDate(null);
+            setAvailabilityVisible(true);
           }}
         >
           Cancel
@@ -89,32 +116,12 @@ const styles = StyleSheet.create({
   slideUp: {
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
-    height: 320,
+    height: 400,
     backgroundColor: "#ffffff",
     width: "100%",
     marginHorizontal: 0,
     alignItems: "center",
-    padding: 30,
-    paddingLeft: 50,
-    paddingRight: 50,
-  },
-  purpleButton: {
-    marginBottom: 18,
-  },
-  MeetingDetailsBoldText: {
-    fontFamily: "Rubik-Medium",
-    fontSize: 17,
-  },
-
-  SubMeetingDetails: {
-    fontFamily: "Rubik-Regular",
-    fontSize: 16,
-    marginBottom: 16,
-  },
-  MeetingDetails: {
-    flex: 5,
-    justifyContent: "flex-start",
-    alignItems: "flex-start",
-    marginTop: 20,
+    paddingLeft: "14%",
+    paddingRight: "14%",
   },
 });

@@ -56,9 +56,15 @@ export const RequestRoute = ({
       }}
     >
       <View style={{ height: "100%", paddingTop: 14 }}>
-        {isLoading ? (
-          <View />
-        ) : fetchFailed || requests.length == 0 ? (
+        {/* {isLoading ? ( <View style={[styles.textBox]}>
+          <Text style={styles.title}>{title}</Text>
+          <Text numberOfLines={1} style={styles.description}>
+            {description}
+          </Text>
+        </View>
+       
+        ) :  */}
+        {fetchFailed || requests.length == 0 ? (
           <View
             style={[
               styles.noResultView,
@@ -90,7 +96,7 @@ export const RequestRoute = ({
             renderItem={renderItem}
             keyExtractor={(item) => item.id}
             showsVerticalScrollIndicator={false}
-            scrollEnabled={false}
+            scrollEnabled={true}
           />
         )}
       </View>

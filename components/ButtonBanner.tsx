@@ -23,7 +23,6 @@ export function ButtonBanner(props) {
    * @returns a horizontally scrollable button banner
    */
   const renderButton = ({ item }) => {
-    console.log(props.isBuyer);
     if (item.title !== "Send Availablity" || !props.isBuyer) {
       return (
         <Button

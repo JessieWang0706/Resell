@@ -49,6 +49,11 @@ export default {
     ios: {
       supportsTablet: true,
       bundleIdentifier: "com.cornellappdev.resell",
+      buildNumber: "2.0.1",
+      infoPlist: {
+        NSCalendarsUsageDescription: "Allow Resell to access your calendar",
+        NSRemindersUsageDescription: "Allow Resell to access your reminders",
+      },
     },
 
     android: {
@@ -56,10 +61,24 @@ export default {
         foregroundImage: "./assets/images/adaptive-icon.png",
         backgroundColor: "#ffffff",
       },
+      permissions: ["READ_CALENDAR", "WRITE_CALENDAR"],
 
       package: "com.cornellappdev.resell.android",
       googleServicesFile: "./config/google-services.json",
       versionCode: 2,
+      intentFilters: [
+        {
+          action: "VIEW",
+          data: [
+            {
+              scheme: "https",
+              host: "*.myapp.io",
+              pathPrefix: "/records",
+            },
+          ],
+          category: ["BROWSABLE", "DEFAULT"],
+        },
+      ],
     },
     web: {
       favicon: "./assets/images/favicon.png",

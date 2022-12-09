@@ -22,13 +22,13 @@ import { pressedOpacity } from "../constants/Values";
 import { useHeaderHeight } from "@react-navigation/elements";
 import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { json } from "stream/consumers";
 import { ScrollView } from "react-native";
 import { platform } from "os";
 import { auth, userRef } from "../config/firebase";
 import { useSelector } from "react-redux";
 import { fonts } from "../globalStyle/globalFont";
-import { getAccessToken } from "../networking/asychStorageFunctions";
+import { getAccessToken } from "../utils/asychStorageFunctions";
+import { makeToast } from "../utils/Toast";
 
 export default function EditProfileScreen({ navigation, route }) {
   const {
@@ -109,68 +109,47 @@ export default function EditProfileScreen({ navigation, route }) {
   const [invalidName, setInvalidName] = useState(false);
 
   const submit = async () => {
-    try {
-      var Json;
-      if (image.startsWith("https")) {
-        Json = JSON.stringify({
-          photoUrlBase64: "",
-          username: username,
-          venmoHandle: venmo,
-          bio: bio,
-        });
-      } else {
-        Json = JSON.stringify({
-          photoUrlBase64: image,
-          username: username,
-          venmoHandle: venmo,
-          bio: bio,
-        });
+    var Json;
+    if (image.startsWith("https")) {
+      Json = JSON.stringify({
+        photoUrlBase64: "",
+        username: username,
+        venmoHandle: venmo,
+        bio: bio,
+      });
+    } else {
+      Json = JSON.stringify({
+        photoUrlBase64: image,
+        username: username,
+        venmoHandle: venmo,
+        bio: bio,
+      });
+    }
+    console.log(Json);
+    const response = await fetch(
+      "https://resell-dev.cornellappdev.com/api/user",
+      {
+        method: "POST",
+        headers: {
+          Authorization: accessToken,
+
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: Json,
       }
+    );
 
-      // console.log(Json);
-      const response = await fetch(
-        "https://resell-dev.cornellappdev.com/api/user/",
-        {
-          method: "POST",
-          headers: {
-            Authorization: accessToken,
-
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: Json,
-        }
-      )
-        .then(function (response) {
-          // alert(JSON.stringify(response));
-          console.log(response);
-          navigation.goBack();
-          return response.json();
-        })
-        .then(async function (data) {
-          auth.currentUser
-            .updateProfile({
-              displayName: data.user.givenName + " " + data.user.familyName,
-              photoURL: data.user.photoUrl,
-            })
-            .then(() => {
-              userRef.doc(data.user.email).update({ venmo: venmo });
-            })
-
-            .catch((error) => {
-              // An error occurred
-              // ...
-              alert(error);
-            });
-        })
-        .catch((error) => {
-          //alert(error.message);
-        });
-    } catch (e) {
-      console.log(e);
+    if (response.ok) {
+      const data = await response.json();
+      auth.currentUser.updateProfile({
+        displayName: data.user.givenName + " " + data.user.familyName,
+        photoURL: data.user.photoUrl,
+      });
+      userRef.doc(data.user.email).update({ venmo: venmo });
+      navigation.goBack();
     }
   };
-
   const scroll = useRef<ScrollView | null>(null);
   return (
     <TouchableWithoutFeedback
@@ -198,11 +177,12 @@ export default function EditProfileScreen({ navigation, route }) {
           </View>
           <TouchableOpacity
             onPress={() => {
+              Keyboard.dismiss();
               if (username.length > 0) {
                 submit();
-                navigation.goBack();
+                makeToast("Profile Updated Successfully");
               } else {
-                Alert.alert("Warning", "Username cannot be empty");
+                makeToast("Username cannot be empty");
               }
             }}
             style={styles.headerButton}

@@ -23,7 +23,7 @@ import {
   getUserId,
   storeEmail,
   storeSignedIn,
-} from "../networking/asychStorageFunctions";
+} from "../utils/asychStorageFunctions";
 
 const styles = StyleSheet.create({
   container: {

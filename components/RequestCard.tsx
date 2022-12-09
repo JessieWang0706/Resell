@@ -9,6 +9,7 @@ import {
   Animated,
 } from "react-native";
 import { Swipeable } from "react-native-gesture-handler";
+import { makeToast } from "../utils/Toast";
 
 const RequestCard = ({
   title,
@@ -32,12 +33,11 @@ const RequestCard = ({
     fetch("https://resell-dev.cornellappdev.com/api/request/id/" + requestId, {
       method: "DELETE",
     }).then(function (response) {
-      alert(JSON.stringify(response));
-
       if (!response.ok) {
         let error = new Error(response.statusText);
         throw error;
       } else {
+        makeToast("Request Deleted");
         return response.json();
       }
     });

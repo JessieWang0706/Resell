@@ -36,11 +36,13 @@ function Button(props) {
       props.setIsBubble(false);
     }
     if (props.title == "Pay with Venmo") {
+      console.log("here", props.otherEmail);
+
       const myUserRef = await userRef.doc(props.OthersEmail);
       const doc = await myUserRef.get();
       var venmo = "";
       if (doc.exists) {
-        console.log(doc.data());
+        console.log("ww", doc.data());
         venmo = doc.data().venmo;
       }
       if (venmo !== "") {

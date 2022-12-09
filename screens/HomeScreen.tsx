@@ -17,7 +17,7 @@ import LoadingScreen from "../screens/LoadingScreen";
 import PurpleButton from "../components/PurpleButton";
 import { useIsFocused } from "@react-navigation/native";
 import { fonts } from "../globalStyle/globalFont";
-import { getAccessToken, getUserId } from "../networking/asychStorageFunctions";
+import { getAccessToken, getUserId } from "../utils/asychStorageFunctions";
 
 LogBox.ignoreLogs(["Warning: ..."]); // Ignore log notification by message
 LogBox.ignoreAllLogs();

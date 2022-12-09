@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 import LoadingScreen from "./LoadingScreen";
 import { useIsFocused } from "@react-navigation/native";
 import { fonts } from "../globalStyle/globalFont";
-import { getAccessToken } from "../networking/asychStorageFunctions";
+import { getAccessToken } from "../utils/asychStorageFunctions";
 
 export default function SavedScreen({ navigation }) {
   const [userId, setUserId] = useState("");
