@@ -84,6 +84,7 @@ export default function SignIn() {
   useEffect(() => {
     getOnboard(setOnBoarded);
   }, []);
+
   // useEffect(() => {
   //   if (showPagination) {
   //     setTimeout(() => setShowPagination(false), 3000);
